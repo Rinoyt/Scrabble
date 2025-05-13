@@ -1,5 +1,6 @@
 package ru.willBeEdited.scrabble.controller;
 
+import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.context.ApplicationContext;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
@@ -16,7 +17,7 @@ public class GameController {
     }
 
     @PutMapping("game")
-    public Move makeMove(@ModelAttribute("game") Game game, Move move, Bot bot) {
+    public Move makeMove(@RequestBody Move move, @ModelAttribute("game") Game game, Bot bot) {
         game.makeMove(move);
         return bot.chooseMove(game);
     }
