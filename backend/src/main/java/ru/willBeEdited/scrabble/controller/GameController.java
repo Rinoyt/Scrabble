@@ -1,5 +1,6 @@
 package ru.willBeEdited.scrabble.controller;
 
+import org.springframework.context.ApplicationContext;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
 import ru.willBeEdited.scrabble.game.Game;
@@ -21,8 +22,9 @@ public class GameController {
     }
 
     @GetMapping("game/reset")
-    public Game resetGame(Model model, Game game) {
-        model.addAttribute("game", game);
-        return game;
+    public Game resetGame(ApplicationContext context, Model model) {
+        Game newGame = context.getBean(Game.class);
+        model.addAttribute("game", newGame);
+        return newGame;
     }
 }
