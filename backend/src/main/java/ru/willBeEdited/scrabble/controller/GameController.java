@@ -11,13 +11,19 @@ import ru.willBeEdited.scrabble.game.player.Bot;
 @RestController
 @RequestMapping("/api/1")
 public class GameController {
+    private final Bot bot;
+
+    public GameController(Bot bot) {
+        this.bot = bot;
+    }
+
     @GetMapping("game")
     public Game getGame(@ModelAttribute("game") Game game) {
         return game;
     }
 
     @PutMapping("game")
-    public Move makeMove(@RequestBody Move move, @ModelAttribute("game") Game game, Bot bot) {
+    public Move makeMove(@RequestBody Move move, @ModelAttribute("game") Game game) {
         game.makeMove(move);
         return bot.chooseMove(game);
     }

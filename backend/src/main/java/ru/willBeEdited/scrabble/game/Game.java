@@ -30,7 +30,7 @@ public class Game {
     }
 
     public void makeMove(Move move) {
-        // pass
+
     }
 
     public Status getStatus() {
