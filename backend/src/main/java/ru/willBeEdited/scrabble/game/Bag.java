@@ -10,6 +10,8 @@ public class Bag {
     private final Deque<Tile> bag = new ArrayDeque<>();
 
     public Bag() {
+        int id = 0;
+
         List<Tile> tiles = new ArrayList<>();
 
         // K, J, X, Q, Z
