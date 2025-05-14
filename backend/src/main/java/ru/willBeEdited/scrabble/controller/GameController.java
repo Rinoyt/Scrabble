@@ -4,6 +4,7 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import org.springframework.context.ApplicationContext;
 import org.springframework.ui.Model;
 import org.springframework.web.bind.annotation.*;
+import ru.willBeEdited.scrabble.exception.IllegalMoveException;
 import ru.willBeEdited.scrabble.game.Game;
 import ru.willBeEdited.scrabble.game.move.Move;
 import ru.willBeEdited.scrabble.game.player.Bot;
@@ -24,6 +25,11 @@ public class GameController {
 
     @PutMapping("game")
     public Move makeMove(@RequestBody Move move, @ModelAttribute("game") Game game) {
+        String error = game.checkMove(move);
+        if (error != null) {
+            throw new IllegalMoveException(error);
+        }
+
         game.makeMove(move);
         return bot.chooseMove(game);
     }

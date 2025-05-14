@@ -16,6 +16,26 @@ public class Hand {
         hand.add(tile);
     }
 
+    public boolean contains(int id) {
+        for (Tile tile : hand) {
+            if (tile.getId() == id) {
+                return true;
+            }
+        }
+
+        return false;
+    }
+
+    public Tile get(int id) {
+        for (Tile tile : hand) {
+            if (tile.getId() == id) {
+                return tile;
+            }
+        }
+
+        return null;
+    }
+
     public void remove(Tile tile) {
         if (!hand.contains(tile)) {
             throw new IllegalArgumentException("Hand doesn't contain tile");
