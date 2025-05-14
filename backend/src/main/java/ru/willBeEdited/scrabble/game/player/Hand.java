@@ -1,4 +1,4 @@
-package ru.willBeEdited.scrabble.game;
+package ru.willBeEdited.scrabble.game.player;
 
 import ru.willBeEdited.scrabble.game.Tile.Tile;
 
@@ -21,5 +21,15 @@ public class Hand {
             throw new IllegalArgumentException("Hand doesn't contain tile");
         }
         hand.remove(tile);
+    }
+
+    public Tile remove(int id) {
+        for (int i = 0; i < hand.size(); i++) {
+            if (hand.get(i).getId() == id) {
+                return hand.remove(i);
+            }
+        }
+
+        throw new IllegalArgumentException("Hand doesn't contain tile with id " + id);
     }
 }

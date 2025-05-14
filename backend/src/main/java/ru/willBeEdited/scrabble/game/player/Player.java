@@ -1,7 +1,6 @@
 package ru.willBeEdited.scrabble.game.player;
 
 import org.springframework.stereotype.Component;
-import ru.willBeEdited.scrabble.game.Hand;
 import ru.willBeEdited.scrabble.game.Tile.Tile;
 
 @Component
