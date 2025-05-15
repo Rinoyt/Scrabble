@@ -130,4 +130,20 @@ public class Game {
     public void setStatus(Status status) {
         this.status = status;
     }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public Player getOpponent() {
+        return opponent;
+    }
+
+    public Board getBoard() {
+        return board;
+    }
+
+    public Bag getBag() {
+        return bag;
+    }
 }
