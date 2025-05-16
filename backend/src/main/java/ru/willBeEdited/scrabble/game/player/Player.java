@@ -1,24 +1,44 @@
 package ru.willBeEdited.scrabble.game.player;
 
 import org.springframework.stereotype.Component;
-import ru.willBeEdited.scrabble.game.Tile.Tile;
+import ru.willBeEdited.scrabble.game.tile.Tile;
+
+import static ru.willBeEdited.scrabble.game.player.PlayerUtil.getRandomInt;
 
 @Component
 public class Player {
-    private final String name;
+    private int id;
+    private String name;
+
     private int score;
-    private final Hand hand = new Hand();
+    private Hand hand = new Hand();
 
     public Player() {
-        this.name = "Guest";
+        id = getRandomInt();
+        name = "Guest" + getRandomInt();
     }
 
-    public Player(String name) {
-        this.name = name;
+    public Player(Player player) {
+        id = player.getId();
+        name = player.getName();
+        score = player.getScore();
+        hand = player.getHand();
+    }
+
+    public int getId() {
+        return id;
+    }
+
+    public void setId(int id) {
+        this.id = id;
     }
 
     public String getName() {
         return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public int getScore() {
@@ -35,6 +55,10 @@ public class Player {
 
     public Hand getHand() {
         return hand;
+    }
+
+    public void setHand(Hand hand) {
+        this.hand = hand;
     }
 
     public void addToHand(Tile tile) {

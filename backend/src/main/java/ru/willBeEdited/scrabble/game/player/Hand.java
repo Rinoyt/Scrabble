@@ -1,23 +1,32 @@
 package ru.willBeEdited.scrabble.game.player;
 
-import ru.willBeEdited.scrabble.game.Tile.Tile;
+import ru.willBeEdited.scrabble.game.tile.Tile;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.List;
 
 public class Hand {
-    private final List<Tile> hand = new ArrayList<>();
+    private List<Tile> tiles = new ArrayList<>();
 
-    public List<Tile> getHand() {
-        return hand;
+    public List<Tile> getTiles() {
+        return tiles;
+    }
+
+    public void setTiles(List<Tile> tiles) {
+        this.tiles = tiles;
     }
 
     public void add(Tile tile) {
-        hand.add(tile);
+        tiles.add(tile);
+    }
+
+    public void addAll(Collection<Tile> tiles) {
+        this.tiles.addAll(tiles);
     }
 
     public boolean contains(int id) {
-        for (Tile tile : hand) {
+        for (Tile tile : tiles) {
             if (tile.getId() == id) {
                 return true;
             }
@@ -27,7 +36,7 @@ public class Hand {
     }
 
     public Tile get(int id) {
-        for (Tile tile : hand) {
+        for (Tile tile : tiles) {
             if (tile.getId() == id) {
                 return tile;
             }
@@ -37,16 +46,16 @@ public class Hand {
     }
 
     public void remove(Tile tile) {
-        if (!hand.contains(tile)) {
-            throw new IllegalArgumentException("Hand doesn't contain tile");
+        if (!tiles.contains(tile)) {
+            throw new IllegalArgumentException("hand doesn't contain tile");
         }
-        hand.remove(tile);
+        tiles.remove(tile);
     }
 
     public Tile remove(int id) {
-        for (int i = 0; i < hand.size(); i++) {
-            if (hand.get(i).getId() == id) {
-                return hand.remove(i);
+        for (int i = 0; i < tiles.size(); i++) {
+            if (tiles.get(i).getId() == id) {
+                return tiles.remove(i);
             }
         }
 

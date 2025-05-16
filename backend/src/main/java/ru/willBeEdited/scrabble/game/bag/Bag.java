@@ -1,7 +1,7 @@
-package ru.willBeEdited.scrabble.game;
+package ru.willBeEdited.scrabble.game.bag;
 
 import org.springframework.stereotype.Component;
-import ru.willBeEdited.scrabble.game.Tile.Tile;
+import ru.willBeEdited.scrabble.game.tile.Tile;
 
 import java.util.*;
 
@@ -90,5 +90,13 @@ public class Bag {
             throw new IllegalStateException("Bag is empty");
         }
         return bag.removeFirst();
+    }
+
+    public List<Tile> draw(int amount) {
+        List<Tile> drawnTiles = new ArrayList<>();
+        while (!bag.isEmpty()) {
+            drawnTiles.add(bag.removeFirst());
+        }
+        return drawnTiles;
     }
 }

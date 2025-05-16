@@ -1,12 +1,15 @@
-package ru.willBeEdited.scrabble.game.Tile;
+package ru.willBeEdited.scrabble.game.tile;
 
-import static ru.willBeEdited.scrabble.game.Tile.TileUtil.getNewId;
+import static ru.willBeEdited.scrabble.game.RandomInt.getNewId;
 
 public class Tile {
-    private final int id;
+    private int id;
     private char character;
-    private final boolean isBlank;
-    private final int score;
+    private boolean isBlank;
+    private int score;
+
+    public Tile() {
+    }
 
     public Tile(char character, boolean isBlank, int score) {
         this.id = getNewId();
@@ -23,6 +26,10 @@ public class Tile {
         return id;
     }
 
+    public void setId(int id) {
+        this.id = id;
+    }
+
     public char getCharacter() {
         return character;
     }
@@ -35,7 +42,15 @@ public class Tile {
         return isBlank;
     }
 
+    public void setBlank(boolean blank) {
+        isBlank = blank;
+    }
+
     public int getScore() {
         return score;
+    }
+
+    public void setScore(int score) {
+        this.score = score;
     }
 }

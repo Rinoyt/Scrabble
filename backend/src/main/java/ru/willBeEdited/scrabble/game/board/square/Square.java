@@ -1,10 +1,10 @@
 package ru.willBeEdited.scrabble.game.board.square;
 
-import ru.willBeEdited.scrabble.game.Tile.Tile;
+import ru.willBeEdited.scrabble.game.tile.Tile;
 
 public class Square {
-    private final SquareType type;
-    private final int multiplier;
+    private SquareType type;
+    private int multiplier;
     private Tile tile;
 
     public Square() {
@@ -17,19 +17,27 @@ public class Square {
         this.multiplier = multiplier;
     }
 
-    public SquareType getSquareType() {
+    public SquareType getType() {
         return type;
+    }
+
+    public void setType(SquareType type) {
+        this.type = type;
     }
 
     public int getMultiplier() {
         return multiplier;
     }
 
+    public void setMultiplier(int multiplier) {
+        this.multiplier = multiplier;
+    }
+
     public boolean hasTile() {
         return tile != null;
     }
 
-    public void placeTile(Tile tile) {
+    public void setTile(Tile tile) {
         this.tile = tile;
     }
 

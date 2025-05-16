@@ -1,0 +1,82 @@
+package ru.willBeEdited.scrabble.game;
+
+import ru.willBeEdited.scrabble.game.bag.BagView;
+import ru.willBeEdited.scrabble.game.move.Move;
+import ru.willBeEdited.scrabble.game.player.Opponent;
+import ru.willBeEdited.scrabble.game.player.Player;
+import ru.willBeEdited.scrabble.game.tile.Tile;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class GameView extends AbstractGame {
+    private Player player;
+    private List<Opponent> opponents;
+
+    private BagView bag;
+
+    public GameView() {
+    }
+
+    public GameView(Game game, int playerId) {
+        id = game.getId();
+        status = game.getStatus();
+        board = game.getBoard();
+        turn = game.getTurn();
+        currentTurnPlayerId = game.getCurrentTurnPlayerId();
+
+        bag = new BagView(game.getBag());
+        opponents = new ArrayList<>();
+        for (Player play : game.getPlayers()) {
+            if (play.getId() == playerId) {
+                player = play;
+            } else {
+                opponents.add(new Opponent(play));
+            }
+        }
+    }
+
+    public void makeMove(Move move, List<Tile> drawnTiles) {
+        bag.draw(drawnTiles.size());
+        super.makeMove(move, drawnTiles);
+    }
+
+    public Player getPlayer() {
+        return player;
+    }
+
+    public void setPlayer(Player player) {
+        this.player = player;
+    }
+
+    public List<Opponent> getOpponents() {
+        return opponents;
+    }
+
+    public void setOpponents(List<Opponent> opponents) {
+        this.opponents = opponents;
+    }
+
+    public BagView getBag() {
+        return bag;
+    }
+
+    public void setBag(BagView bag) {
+        this.bag = bag;
+    }
+
+    @Override
+    protected Player getCurrentPlayer() {
+        if (player.getId() == currentTurnPlayerId) {
+            return player;
+        }
+
+        for (Opponent opponent : opponents) {
+            if (opponent.getId() == currentTurnPlayerId) {
+                return opponent;
+            }
+        }
+
+        throw new IllegalStateException("Current player not found with id " + currentTurnPlayerId);
+    }
+}
