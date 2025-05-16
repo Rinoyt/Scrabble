@@ -54,6 +54,8 @@ public abstract class AbstractGame {
                 board.placeTile(x, y, tile);
             }
         }
+
+        nextPlayer();
     }
 
     public int getId() {
@@ -96,5 +98,7 @@ public abstract class AbstractGame {
         this.currentTurnPlayerId = currentTurnPlayerId;
     }
 
-    protected abstract Player getCurrentPlayer();
+    public abstract Player getCurrentPlayer();
+
+    protected abstract void nextPlayer();
 }

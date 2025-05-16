@@ -5,10 +5,28 @@ import ru.willBeEdited.scrabble.game.tile.Tile;
 import java.util.List;
 
 public class Move {
+    private int playerId;
+
     private int[] tileId;
     private List<Tile> tiles;
     private int[] coordinates;
+
     private List<Character> blank;
+
+    public Move() {
+    }
+
+    public Move(int playerId) {
+        this.playerId = playerId;
+    }
+
+    public int getPlayerId() {
+        return playerId;
+    }
+
+    public void setPlayerId(int playerId) {
+        this.playerId = playerId;
+    }
 
     public int[] getTileId() {
         return tileId;

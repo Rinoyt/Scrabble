@@ -2,7 +2,7 @@ package ru.willBeEdited.scrabble.game.player;
 
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
-public class Opponent extends Player {
+public class Opponent extends StandardPlayer {
     private int handSize;
 
     public Opponent() {

@@ -19,6 +19,7 @@ public class GameView extends AbstractGame {
     }
 
     public GameView(Game game, int playerId) {
+        status = Status.OPPONENT_TURN;
         id = game.getId();
         status = game.getStatus();
         board = game.getBoard();
@@ -66,7 +67,7 @@ public class GameView extends AbstractGame {
     }
 
     @Override
-    protected Player getCurrentPlayer() {
+    public Player getCurrentPlayer() {
         if (player.getId() == currentTurnPlayerId) {
             return player;
         }
@@ -74,6 +75,25 @@ public class GameView extends AbstractGame {
         for (Opponent opponent : opponents) {
             if (opponent.getId() == currentTurnPlayerId) {
                 return opponent;
+            }
+        }
+
+        throw new IllegalStateException("Current player not found with id " + currentTurnPlayerId);
+    }
+
+    @Override
+    protected void nextPlayer() {
+        if (player.getId() == currentTurnPlayerId) {
+            currentTurnPlayerId = opponents.getFirst().getId();
+            status = Status.PLAYER_TURN;
+            return;
+        }
+
+        for (int i = 0; i < opponents.size(); i++) {
+            if (opponents.get(i).getId() == currentTurnPlayerId) {
+                currentTurnPlayerId = opponents.get((i + 1) % opponents.size()).getId();
+                status = Status.OPPONENT_TURN;
+                return;
             }
         }
 

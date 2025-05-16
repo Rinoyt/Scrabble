@@ -21,6 +21,7 @@ public class Game extends AbstractGame{
     private final Bag bag;
 
     public Game(Board board, Bag bag) {
+        status = Status.PLAYER_TURN;
         id = getNewId();
         this.board = board;
         this.bag = bag;
@@ -107,10 +108,22 @@ public class Game extends AbstractGame{
     }
 
     @Override
-    protected Player getCurrentPlayer() {
+    public Player getCurrentPlayer() {
         for (Player player : players) {
             if (player.getId() == currentTurnPlayerId) {
                 return player;
+            }
+        }
+
+        throw new IllegalStateException("Current player not found with id " + currentTurnPlayerId);
+    }
+
+    @Override
+    protected void nextPlayer() {
+        for (int i = 0; i < players.size(); i++) {
+            if (players.get(i).getId() == currentTurnPlayerId) {
+                currentTurnPlayerId = players.get((i + 1) % players.size()).getId();
+                return;
             }
         }
 

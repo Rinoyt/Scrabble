@@ -1,8 +1,9 @@
 package ru.willBeEdited.scrabble.controller;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.ApplicationContext;
+import org.springframework.messaging.core.AbstractMessageSendingTemplate;
+import org.springframework.scheduling.annotation.Async;
 import org.springframework.ui.Model;
 import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
@@ -23,13 +24,15 @@ import java.util.Map;
 @RequestMapping("/api/1")
 public class GameController {
     private final ApplicationContext context;
+    private final AbstractMessageSendingTemplate<String> messageSendingTemplate;
 
     private final Bot bot;
 
     private final Map<Integer, Game> games = new HashMap<>();
 
-    public GameController(ApplicationContext context, Bot bot) {
+    public GameController(ApplicationContext context, AbstractMessageSendingTemplate<String> messageSendingTemplate, Bot bot) {
         this.context = context;
+        this.messageSendingTemplate = messageSendingTemplate;
         this.bot = bot;
     }
 
@@ -43,22 +46,34 @@ public class GameController {
 
         Player player = context.getBean(Player.class);
         game.addPlayer(player);
-        game.addPlayer(context.getBean(Player.class));
+        game.addPlayer(context.getBean(Bot.class));
 
         games.put(game.getId(), game);
-        return new GameView(game, player.getId());
+        
+        GameView gameView = new GameView(game, player.getId());
+        model.addAttribute("gameView", gameView);
+        return gameView;
     }
 
     @PutMapping("game")
     public List<Tile> makeMove(@RequestBody Move move, @ModelAttribute("gameView") GameView gameView) {
         Game game = games.get(gameView.getId());
+        if (gameView.getPlayer().getId() != game.getCurrentTurnPlayerId()) {
+            throw new IllegalMoveException("Out of turn move");
+        }
         String error = game.checkMove(move);
         if (error != null) {
             throw new IllegalMoveException(error);
         }
 
         List<Tile> drawnTiles = game.makeMove(move);
-//        return bot.chooseMove(game);
+        messageSendingTemplate.convertAndSend("/game/move", move);
+
+        // check if the current player is a bot
+        if (game.getCurrentPlayer() instanceof Bot) {
+            messageSendingTemplate.convertAndSend("/game/move", bot.chooseMove(game));
+        }
+
         return drawnTiles;
     }
 
