@@ -22,11 +22,23 @@ public class BagView {
         return bagSize == 0;
     }
 
-    public void draw() {
+    public boolean draw() {
+        if (isEmpty()) {
+            return false;
+        }
+
         bagSize--;
+        return true;
     }
 
-    public void draw(int amount) {
+    public int draw(int amount) {
+        if (bagSize < amount) {
+            int tmp = bagSize;
+            bagSize = 0;
+            return tmp;
+        }
+
         bagSize -= amount;
+        return amount;
     }
 }

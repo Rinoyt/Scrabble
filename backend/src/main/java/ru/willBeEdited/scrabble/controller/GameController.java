@@ -14,6 +14,7 @@ import ru.willBeEdited.scrabble.game.player.Bot;
 import ru.willBeEdited.scrabble.game.player.Player;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
+import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -27,6 +28,7 @@ public class GameController {
     private final Bot bot;
 
     private final Map<Integer, Game> games = new HashMap<>();
+    private final Map<Integer, List<GameView>> gameViews = new HashMap<>();
 
     public GameController(ApplicationContext context, AbstractMessageSendingTemplate<String> messageSendingTemplate, Bot bot) {
         this.context = context;
@@ -49,6 +51,8 @@ public class GameController {
         games.put(game.getId(), game);
         
         GameView gameView = context.getBean(GameView.class, game, player.getId());
+        gameViews.put(game.getId(), new ArrayList<>());
+        gameViews.get(game.getId()).add(gameView);
         session.setAttribute("gameView", gameView);
         return gameView;
     }
@@ -65,13 +69,20 @@ public class GameController {
         }
 
         List<Tile> drawnTiles = game.makeMove(move);
+        for (GameView view : gameViews.get(game.getId())) {
+            view.makeMove(move, drawnTiles);
+        }
         messageSendingTemplate.convertAndSend("/game/move", move);
 
         // check if the current player is a bot
         if (game.getCurrentPlayer() instanceof Bot) {
             Move botMove = bot.chooseMove(game);
-            bot.updateHand(game.makeMove(botMove));
 //            String error = game.checkMove(move);
+            List<Tile> botDrawnTiles = game.makeMove(botMove);
+            bot.updateHand(botDrawnTiles);
+            for (GameView view : gameViews.get(game.getId())) {
+                view.makeMove(botMove, botDrawnTiles);
+            }
             messageSendingTemplate.convertAndSend("/game/move", botMove);
         }
 

@@ -42,6 +42,16 @@ public class GameView extends AbstractGame {
         }
     }
 
+    public List<Tile> makeMove(Move move) {
+        int drawnTilesSize = bag.draw(move.getTileId().length);
+        List<Tile> drawnTiles = new ArrayList<>();
+        for (int i = 0; i < drawnTilesSize; i++) {
+            drawnTiles.add(new Tile());
+        }
+        super.makeMove(move, drawnTiles);
+        return drawnTiles;
+    }
+
     public void makeMove(Move move, List<Tile> drawnTiles) {
         bag.draw(drawnTiles.size());
         super.makeMove(move, drawnTiles);
