@@ -69,7 +69,10 @@ public class GameController {
 
         // check if the current player is a bot
         if (game.getCurrentPlayer() instanceof Bot) {
-            messageSendingTemplate.convertAndSend("/game/move", bot.chooseMove(game));
+            Move botMove = bot.chooseMove(game);
+            bot.updateHand(game.makeMove(botMove));
+//            String error = game.checkMove(move);
+            messageSendingTemplate.convertAndSend("/game/move", botMove);
         }
 
         return drawnTiles;
