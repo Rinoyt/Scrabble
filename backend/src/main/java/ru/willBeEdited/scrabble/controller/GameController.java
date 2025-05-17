@@ -1,6 +1,7 @@
 package ru.willBeEdited.scrabble.controller;
 
 import io.swagger.v3.oas.annotations.parameters.RequestBody;
+import jakarta.servlet.http.HttpSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.messaging.core.AbstractMessageSendingTemplate;
 import org.springframework.scheduling.annotation.Async;
@@ -37,9 +38,9 @@ public class GameController {
     }
 
     @GetMapping("game")
-    public GameView getGame(Model model) {
-        if (model.containsAttribute("gameView")) {
-            return (GameView) model.getAttribute("gameView");
+    public GameView getGame(HttpSession session) {
+        if (session.getAttribute("gameView") != null) {
+            return (GameView) session.getAttribute("gameView");
         }
 
         Game game = context.getBean(Game.class);
@@ -51,12 +52,12 @@ public class GameController {
         games.put(game.getId(), game);
         
         GameView gameView = new GameView(game, player.getId());
-        model.addAttribute("gameView", gameView);
+        session.setAttribute("gameView", gameView);
         return gameView;
     }
 
     @PutMapping("game")
-    public List<Tile> makeMove(@RequestBody Move move, @ModelAttribute("gameView") GameView gameView) {
+    public List<Tile> makeMove(@RequestBody Move move, @SessionAttribute("gameView") GameView gameView) {
         Game game = games.get(gameView.getId());
         if (gameView.getPlayer().getId() != game.getCurrentTurnPlayerId()) {
             throw new IllegalMoveException("Out of turn move");
@@ -78,9 +79,9 @@ public class GameController {
     }
 
     @GetMapping("game/reset")
-    public RedirectView resetGame(@ModelAttribute("gameView") GameView gameView, ModelMap model) {
+    public RedirectView resetGame(@SessionAttribute("gameView") GameView gameView, HttpSession session) {
         games.remove(gameView.getId());
-        model.remove("gameView");
+        session.removeAttribute("gameView");
         return new RedirectView("/api/1/game");
     }
 }
