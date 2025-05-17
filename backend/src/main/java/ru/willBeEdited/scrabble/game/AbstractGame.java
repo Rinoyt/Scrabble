@@ -30,11 +30,10 @@ public abstract class AbstractGame {
         Player player = getCurrentPlayer();
 
         // move: draw or place tiles
-        Hand hand = player.getHand();
         for (int id : move.getTileId()) {
-            hand.remove(id);
+            player.removeFromHand(id);
         }
-        hand.addAll(drawnTiles);
+        player.addAllToHand(drawnTiles);
 
         // move: place tiles
         int[] coordinates = move.getCoordinates();

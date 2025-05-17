@@ -2,6 +2,8 @@ package ru.willBeEdited.scrabble.game.player;
 
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
+import java.util.Collection;
+
 public interface Player {
     public int getId();
 
@@ -23,5 +25,9 @@ public interface Player {
 
     public void addToHand(Tile tile);
 
+    public void addAllToHand(Collection<Tile> tiles);
+
     public void removeFromHand(Tile tile);
+
+    public void removeFromHand(int tileId);
 }

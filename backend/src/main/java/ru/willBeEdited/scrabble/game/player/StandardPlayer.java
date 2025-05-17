@@ -5,6 +5,8 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
+import java.util.Collection;
+
 import static ru.willBeEdited.scrabble.game.player.PlayerUtil.getRandomInt;
 
 @Primary
@@ -73,7 +75,17 @@ public class StandardPlayer implements Player {
         hand.add(tile);
     }
 
+    @Override
+    public void addAllToHand(Collection<Tile> tiles) {
+        hand.addAll(tiles);
+    }
+
     public void removeFromHand(Tile tile) {
         hand.remove(tile);
+    }
+
+    @Override
+    public void removeFromHand(int tileId) {
+        hand.remove(tileId);
     }
 }
