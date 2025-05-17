@@ -4,9 +4,6 @@ import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.messaging.core.AbstractMessageSendingTemplate;
-import org.springframework.scheduling.annotation.Async;
-import org.springframework.ui.Model;
-import org.springframework.ui.ModelMap;
 import org.springframework.web.bind.annotation.*;
 import org.springframework.web.servlet.view.RedirectView;
 import ru.willBeEdited.scrabble.exception.IllegalMoveException;
@@ -17,7 +14,6 @@ import ru.willBeEdited.scrabble.game.player.Bot;
 import ru.willBeEdited.scrabble.game.player.Player;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
-import javax.naming.Context;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
