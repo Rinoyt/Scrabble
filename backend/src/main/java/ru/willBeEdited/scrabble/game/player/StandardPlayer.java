@@ -1,6 +1,7 @@
 package ru.willBeEdited.scrabble.game.player;
 
 import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
@@ -8,6 +9,7 @@ import static ru.willBeEdited.scrabble.game.player.PlayerUtil.getRandomInt;
 
 @Primary
 @Component
+@Scope("prototype")
 public class StandardPlayer implements Player {
     private int id;
     private String name;

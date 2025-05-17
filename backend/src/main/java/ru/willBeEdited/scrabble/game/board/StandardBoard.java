@@ -1,10 +1,12 @@
 package ru.willBeEdited.scrabble.game.board;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ru.willBeEdited.scrabble.game.board.square.Square;
 import ru.willBeEdited.scrabble.game.board.square.SquareType;
 
 @Component
+@Scope("prototype")
 public class StandardBoard extends AbstractBoard {
     private final Square[][] board;
 

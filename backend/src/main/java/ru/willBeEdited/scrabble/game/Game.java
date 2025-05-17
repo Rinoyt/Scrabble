@@ -1,5 +1,7 @@
 package ru.willBeEdited.scrabble.game;
 
+import org.springframework.context.annotation.Primary;
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import ru.willBeEdited.scrabble.game.bag.Bag;
@@ -13,8 +15,10 @@ import java.util.*;
 
 import static ru.willBeEdited.scrabble.game.RandomInt.getNewId;
 
+@Primary
 @Controller
 @SessionAttributes("game")
+@Scope("prototype")
 public class Game extends AbstractGame{
     private final List<Player> players = new ArrayList<>();
 

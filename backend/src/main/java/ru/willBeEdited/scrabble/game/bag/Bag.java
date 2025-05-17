@@ -1,11 +1,13 @@
 package ru.willBeEdited.scrabble.game.bag;
 
+import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
 import java.util.*;
 
 @Component
+@Scope("prototype")
 public class Bag {
     private final Deque<Tile> bag = new ArrayDeque<>();
 

@@ -1,5 +1,7 @@
 package ru.willBeEdited.scrabble.game;
 
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Component;
 import ru.willBeEdited.scrabble.game.bag.BagView;
 import ru.willBeEdited.scrabble.game.move.Move;
 import ru.willBeEdited.scrabble.game.player.Opponent;
@@ -9,6 +11,8 @@ import ru.willBeEdited.scrabble.game.tile.Tile;
 import java.util.ArrayList;
 import java.util.List;
 
+@Component
+@Scope("prototype")
 public class GameView extends AbstractGame {
     private Player player;
     private List<Opponent> opponents;

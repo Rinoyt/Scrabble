@@ -17,6 +17,7 @@ import ru.willBeEdited.scrabble.game.player.Bot;
 import ru.willBeEdited.scrabble.game.player.Player;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
+import javax.naming.Context;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
@@ -51,7 +52,7 @@ public class GameController {
 
         games.put(game.getId(), game);
         
-        GameView gameView = new GameView(game, player.getId());
+        GameView gameView = context.getBean(GameView.class, game, player.getId());
         session.setAttribute("gameView", gameView);
         return gameView;
     }
