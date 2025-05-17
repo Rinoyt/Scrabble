@@ -30,7 +30,7 @@ public class StandardPlayer implements Player {
         id = player.getId();
         name = player.getName();
         score = player.getScore();
-        hand = player.getHand();
+        hand = new Hand(player.getHand());
     }
 
     public int getId() {

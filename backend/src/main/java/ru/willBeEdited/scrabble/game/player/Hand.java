@@ -9,6 +9,13 @@ import java.util.List;
 public class Hand {
     private List<Tile> tiles = new ArrayList<>();
 
+    public Hand() {
+    }
+
+    public Hand(Hand hand) {
+        this.tiles = hand.getTiles();
+    }
+
     public List<Tile> getTiles() {
         return tiles;
     }

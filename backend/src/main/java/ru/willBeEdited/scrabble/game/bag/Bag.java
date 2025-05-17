@@ -79,6 +79,10 @@ public class Bag {
         bag.addAll(tiles);
     }
 
+    public Bag(Bag bag) {
+        this.bag.addAll(bag.bag);
+    }
+
     public int size() {
         return bag.size();
     }

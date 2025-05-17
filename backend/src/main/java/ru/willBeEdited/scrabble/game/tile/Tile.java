@@ -22,6 +22,13 @@ public class Tile {
         this(character, false, score);
     }
 
+    public Tile(Tile tile) {
+        this.id = tile.id;
+        this.character = tile.character;
+        this.isBlank = tile.isBlank;
+        this.score = tile.score;
+    }
+
     public int getId() {
         return id;
     }

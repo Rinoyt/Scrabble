@@ -17,6 +17,14 @@ public class Square {
         this.multiplier = multiplier;
     }
 
+    public Square(Square square) {
+        type = square.getType();
+        multiplier = square.getMultiplier();
+        if (square.getTile() != null) {
+            tile = new Tile(square.getTile());
+        }
+    }
+
     public SquareType getType() {
         return type;
     }

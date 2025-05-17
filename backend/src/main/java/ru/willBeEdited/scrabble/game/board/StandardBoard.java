@@ -34,6 +34,16 @@ public class StandardBoard extends AbstractBoard {
         assign8(7, 3, new Square(SquareType.LETTER, 2));
     }
 
+    public StandardBoard(Board board) {
+        this.board = super.board;
+
+        for (int i = 0; i < board.getBoard().length; i++) {
+            for (int j = 0; j < board.getBoard()[i].length; j++) {
+                this.board[i][j] = new Square(board.getBoard()[i][j]);
+            }
+        }
+    }
+
     private void assign1(int x, int y, Square square) {
         board[x][y] = square;
     }

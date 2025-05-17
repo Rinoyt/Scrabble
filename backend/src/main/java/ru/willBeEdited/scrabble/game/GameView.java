@@ -3,9 +3,11 @@ package ru.willBeEdited.scrabble.game;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ru.willBeEdited.scrabble.game.bag.BagView;
+import ru.willBeEdited.scrabble.game.board.StandardBoard;
 import ru.willBeEdited.scrabble.game.move.Move;
 import ru.willBeEdited.scrabble.game.player.Opponent;
 import ru.willBeEdited.scrabble.game.player.Player;
+import ru.willBeEdited.scrabble.game.player.StandardPlayer;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
 import java.util.ArrayList;
@@ -23,10 +25,9 @@ public class GameView extends AbstractGame {
     }
 
     public GameView(Game game, int playerId) {
-        status = Status.OPPONENT_TURN;
         id = game.getId();
         status = game.getStatus();
-        board = game.getBoard();
+        board = new StandardBoard(game.getBoard());
         turn = game.getTurn();
         currentTurnPlayerId = game.getCurrentTurnPlayerId();
 
@@ -34,7 +35,7 @@ public class GameView extends AbstractGame {
         opponents = new ArrayList<>();
         for (Player play : game.getPlayers()) {
             if (play.getId() == playerId) {
-                player = play;
+                player = new StandardPlayer(play);
             } else {
                 opponents.add(new Opponent(play));
             }
