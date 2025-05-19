@@ -2,7 +2,6 @@ package ru.willBeEdited.scrabble.game;
 
 import ru.willBeEdited.scrabble.game.board.Board;
 import ru.willBeEdited.scrabble.game.move.Move;
-import ru.willBeEdited.scrabble.game.player.Hand;
 import ru.willBeEdited.scrabble.game.player.Player;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
@@ -37,6 +36,15 @@ public abstract class AbstractGame {
 
         // move: place tiles
         int[] coordinates = move.getCoordinates();
+
+        // calculating score
+        int score = 0;
+        int[] coordinatesForWords = move.getCoordinatesForWords();
+        // TODO: calculate the score
+
+        player.addScore(score);
+
+        // placing tiles on the board
         List<Character> blanks = move.getBlank();
         Deque<Character> blanksQueue = new ArrayDeque<>();
         if (blanks != null) {
