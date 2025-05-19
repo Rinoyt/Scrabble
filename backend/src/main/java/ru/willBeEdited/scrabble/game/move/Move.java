@@ -11,6 +11,9 @@ public class Move {
     private List<Tile> tiles;
     private int[] coordinates;
 
+    // the player needs to pick which tiles form new words
+    private int[] coordinatesForWords;
+
     private List<Character> blank;
 
     public Move() {
@@ -50,6 +53,14 @@ public class Move {
 
     public void setCoordinates(int[] coordinates) {
         this.coordinates = coordinates;
+    }
+
+    public int[] getCoordinatesForWords() {
+        return coordinatesForWords;
+    }
+
+    public void setCoordinatesForWords(int[] coordinatesForWords) {
+        this.coordinatesForWords = coordinatesForWords;
     }
 
     public List<Character> getBlank() {

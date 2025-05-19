@@ -114,6 +114,19 @@ public class Game extends AbstractGame{
                 }
             }
 
+            int[] coordinatesForWords = move.getCoordinatesForWords();
+            for (int i = 0; i < tiles.size(); i += 2) {
+                int x = coordinates[i];
+                int y = coordinates[i + 1];
+                if (x < 0 || boardSize <= x || y < 0 || boardSize <= y) {
+                    return "incorrect coordinates for formed words";
+                }
+
+                // TODO: check if coordinatesForWords contains coordinates
+
+                // TODO: check if words are adjacent to the placed tiles
+            }
+
             return null;
         }
     }
