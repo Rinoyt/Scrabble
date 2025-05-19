@@ -72,13 +72,34 @@ public class Game extends AbstractGame{
                 return "tiles and their coordinates for placement do not match";
             }
 
+            int row = -1;
+            int column = -1;
             int blankNumber = move.getBlank().size();
             int boardSize = board.getBoard().length;
+            boolean[][] placed = new boolean[boardSize][boardSize];
             for (int i = 0; i < coordinates.length; i += 2) {
                 int x = coordinates[i];
                 int y = coordinates[i + 1];
                 if (x < 0 || boardSize <= x || y < 0 || boardSize <= y) {
                     return "incorrect coordinates";
+                }
+
+                if (placed[x][y]) {
+                    return "cannot place tiles on the same square on the board";
+                }
+                placed[x][y] = true;
+
+                if (i == 0) {
+                    row = x;
+                    column = y;
+                } else {
+                    if (row == x) {
+                        column = -1;
+                    } else if (column == y) {
+                        row = -1;
+                    } else {
+                        return "all tiles must be placed in one row or column";
+                    }
                 }
 
                 if (board.getBoard()[x][y].hasTile()) {
