@@ -2,6 +2,34 @@ import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import StartScreen from "./StartScreen";
 
+import clsx from "clsx";
+
+interface Multiplier {
+    type: "BLANK" | "WORD" | "LETTER",
+    m: number,
+}
+
+interface GameData {
+    bag: object,
+    board: BoardData,
+    currentTurnPlayerId: number,
+    id: number,
+    opponents: object[],
+    player: object,
+    status: string,
+    turn: number
+}
+
+interface BoardData {
+    board: CellData[][]
+}
+
+interface CellData {
+    type: "BLANK" | "WORD" | "LETTER",
+    multiplier: number,
+    tile: object | null
+}
+
 const letterPoints: Record<string, number> = {
     A: 1, B: 3, C: 3, D: 2, E: 1, F: 4, G: 2,
     H: 4, I: 1, J: 8, K: 5, L: 1, M: 3, N: 1,
@@ -15,8 +43,38 @@ const generateRack = (): string[] => {
     return Array.from({ length: 7 }, () => letters[Math.floor(Math.random() * letters.length)]);
 };
 
+const LETTER2_BG: string = "bg-blue-300";
+const LETTER3_BG: string = "bg-red-300";
+const WORD2_BG: string = "bg-yellow-300";
+const WORD3_BG: string = "bg-pink-300";
+const BLANK_BG: string = "bg-green-100";
+
+const getCellColor = (multiplier: Multiplier | null): string => {
+    if (multiplier === null) {
+        return LETTER2_BG
+    }
+
+    if (multiplier.type == "LETTER" && multiplier.m == 2) {
+        return LETTER2_BG
+    }
+    else if (multiplier.type == "LETTER" && multiplier.m == 3) {
+        return LETTER3_BG
+    }
+    else if (multiplier.type == "WORD" && multiplier.m == 2) {
+        return WORD2_BG
+    }
+    else if (multiplier.type == "WORD" && multiplier.m == 3) {
+        return WORD3_BG
+    }
+    else {
+        return BLANK_BG
+    }
+}
+
 const Board: React.FC = () => {
     const [board, setBoard] = useState<(string | null)[][]>(Array(15).fill(null).map(() => Array(15).fill(null)));
+    const [multipliers, setMultipliers] = useState<(Multiplier | null)[][]>(Array(15).fill(null).map(() => Array(15).fill(null)));
+
     const [rack, setRack] = useState<string[]>(generateRack());
     const [score, setScore] = useState<number>(0);
     const [gameStarted, setGameStarted] = useState<boolean>(false);
@@ -63,9 +121,26 @@ const Board: React.FC = () => {
 
     const retakeTiles = () => { };
 
-    const startGame = () => {
-        // Здесь будет http-запрос
+    const startGame = async () => {
         setGameStarted(true);
+
+        try {
+            const response = await fetch("http://localhost:8090/api/1/game", { method: "GET" });
+
+            if (!response.ok) {
+                throw new Error(`HTTP error! status: ${response.status}`);
+            }
+
+            const data: GameData = await response.json();
+            console.log("Server response:", data);
+
+            const ms: (Multiplier | null)[][] = data.board.board.map((row) => row.map((cell) => ({ type: cell.type, m: cell.multiplier })));
+            setMultipliers(ms);
+
+            setGameStarted(true);
+        } catch (error) {
+            console.error("Error while starting a game:", error);
+        }
     };
 
     if (!gameStarted) {
@@ -78,6 +153,28 @@ const Board: React.FC = () => {
             <div className="mb-4">Score: {score}</div>
             {/* <button onClick={calculateScore} className="mb-4 px-4 py-2 bg-blue-500 text-white rounded">Подсчитать очки</button> */}
 
+            <div className="mb-3 flex flex-row gap-4">
+                <div className="flex flex-row items-center gap-1.5">
+                    <div className={clsx("w-4 h-4 border border-gray-400", LETTER2_BG)} />
+                    <span>Буква х2</span>
+                </div>
+
+                <div className="flex flex-row items-center gap-2">
+                    <div className={clsx("w-4 h-4 border border-gray-400", LETTER3_BG)} />
+                    <span>Буква х3</span>
+                </div>
+
+                <div className="flex flex-row items-center gap-2">
+                    <div className={clsx("w-4 h-4 border border-gray-400", WORD2_BG)} />
+                    <span>Слово х2</span>
+                </div>
+
+                <div className="flex flex-row items-center gap-2">
+                    <div className={clsx("w-4 h-4 border border-gray-400", WORD3_BG)} />
+                    <span>Слово х2</span>
+                </div>
+            </div>
+
             <div className="grid grid-cols-1 mb-1">
                 {board.map((row, rowIndex) => (
                     <div key={uuidv4()} className="flex">
@@ -87,7 +184,10 @@ const Board: React.FC = () => {
                                 onDragOver={(e) => e.preventDefault()}
                                 onDrop={() => onDrop(rowIndex, colIndex)}
                                 onDoubleClick={() => onReturnToRack(rowIndex, colIndex)}
-                                className="w-8 h-8 border border-gray-400 flex items-center justify-center text-lg bg-green-100 cursor-pointer text-gray-950"
+                                className={clsx(
+                                    "w-8 h-8 border border-gray-400 flex items-center justify-center text-lg cursor-pointer text-gray-950",
+                                    getCellColor(multipliers[rowIndex][colIndex])
+                                )}
                             >
                                 {cell}
                             </div>
