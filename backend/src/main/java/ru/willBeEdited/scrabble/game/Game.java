@@ -44,9 +44,9 @@ public class Game extends AbstractGame{
     public String checkMove(Move move) {
         Player player = getCurrentPlayer();
 
-        if (move.getTileId() == null) {
+        if (move.getTileId().isEmpty()) {
             return null; // move: pass
-        } else if (move.getCoordinates() == null) {
+        } else if (move.getCoordinates().isEmpty()) {
             if (bag.size() >= 7) {
                 return null;
             }
@@ -137,11 +137,7 @@ public class Game extends AbstractGame{
     }
 
     public List<Tile> makeMove(Move move) {
-        int drawSize = 0;
-        if (move.getTileId() != null) {
-            drawSize = move.getTileId().size();
-        }
-        List<Tile> drawnTiles = bag.draw(drawSize);
+        List<Tile> drawnTiles = bag.draw(move.getTileId().size());
         super.makeMove(move, drawnTiles);
         return drawnTiles;
     }
@@ -177,28 +173,8 @@ public class Game extends AbstractGame{
         throw new IllegalStateException("Current player not found with id " + currentTurnPlayerId);
     }
 
-//    @Override
-//    protected void checkForEnd() {
-//        if (status != Status.PLAYER_TURN && status != Status.OPPONENT_TURN) {
-//            return;
-//        }
-//
-//        if (scorelessTurns >= 6 || getCurrentPlayer().getHand().size() == 0) {
-//            for (Player player : players) {
-//                player.addScore(-player.getHand().getSumScore());
-//            }
-//
-//            int bestScore = -1;
-//            List<Integer> winnerId = 0;
-//            for (Player player : players) {
-//                if (player.getScore() > bestScore) {
-//                    winnerId = player.getId();
-//                    bestScore = player.getScore();
-//                    status = Status.WON;
-//                } else if (player.getScore() == bestScore) {
-//                    status = Status.DRAW;
-//                }
-//            }
-//        }
-//    }
+    @Override
+    protected void checkForEnd() {
+        checkForEnd(players);
+    }
 }

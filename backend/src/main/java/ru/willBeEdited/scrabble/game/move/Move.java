@@ -2,19 +2,20 @@ package ru.willBeEdited.scrabble.game.move;
 
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
+import java.util.ArrayList;
 import java.util.List;
 
 public class Move {
     private int playerId;
 
-    private List<Integer> tileId;
-    private List<Tile> tiles;
-    private List<Integer> coordinates;
+    private List<Integer> tileId = new ArrayList<>();
+    private List<Tile> tiles = new ArrayList<>();
+    private List<Integer> coordinates = new ArrayList<>();
 
     // the player needs to pick which tiles form new words
-    private List<Integer> coordinatesForWords;
+    private List<Integer> coordinatesForWords = new ArrayList<>();
 
-    private List<Character> blank;
+    private List<Character> blank = new ArrayList<>();
 
     public Move() {
     }

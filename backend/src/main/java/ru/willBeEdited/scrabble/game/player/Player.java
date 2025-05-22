@@ -5,29 +5,31 @@ import ru.willBeEdited.scrabble.game.tile.Tile;
 import java.util.Collection;
 
 public interface Player {
-    public int getId();
+    int getId();
 
-    public void setId(int id);
+    void setId(int id);
 
-    public String getName();
+    String getName();
 
-    public void setName(String name);
+    void setName(String name);
 
-    public int getScore();
+    int getScore();
 
-    public void setScore(int score);
+    void setScore(int score);
 
-    public void addScore(int score);
+    void addScore(int score);
 
-    public Hand getHand();
+    Hand getHand();
 
-    public void setHand(Hand hand);
+    void setHand(Hand hand);
 
-    public void addToHand(Tile tile);
+    void addToHand(Tile tile);
 
-    public void addAllToHand(Collection<Tile> tiles);
+    void addAllToHand(Collection<Tile> tiles);
 
-    public void removeFromHand(Tile tile);
+    int getHandSize();
 
-    public void removeFromHand(int tileId);
+    void removeFromHand(Tile tile);
+
+    void removeFromHand(int tileId);
 }

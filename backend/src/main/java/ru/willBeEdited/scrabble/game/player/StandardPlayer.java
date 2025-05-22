@@ -80,6 +80,11 @@ public class StandardPlayer implements Player {
         hand.addAll(tiles);
     }
 
+    @Override
+    public int getHandSize() {
+        return hand.size();
+    }
+
     public void removeFromHand(Tile tile) {
         hand.remove(tile);
     }

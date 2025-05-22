@@ -115,25 +115,14 @@ public class GameView extends AbstractGame {
         throw new IllegalStateException("Current player not found with id " + currentTurnPlayerId);
     }
 
-//    @Override
-//    protected void checkForEnd() {
-//        if (status != Status.PLAYER_TURN && status != Status.OPPONENT_TURN) {
-//            return;
-//        }
-//
-//        if (scorelessTurns >= 6 || getCurrentPlayer().getHand().size() == 0) {
-//            int bestScore = player.getScore();
-//            int winnerId = player.getId();
-//            status = Status.WON;
-//            for (Opponent opponent : opponents) {
-//                if (opponent.getScore() > bestScore) {
-//                    winnerId = opponent.getId();
-//                    bestScore = opponent.getScore();
-//                    status = Status.WON;
-//                } else if (opponent.getScore() == bestScore) {
-//                    status = Status.DRAW;
-//                }
-//            }
-//        }
-//    }
+    @Override
+    protected void checkForEnd() {
+        List<Player> players = new ArrayList<>();
+        players.add(player);
+        players.addAll(opponents);
+
+        if (checkForEnd(players) && !winnerId.contains(player.getId())) {
+            status = Status.LOST;
+        }
+    }
 }

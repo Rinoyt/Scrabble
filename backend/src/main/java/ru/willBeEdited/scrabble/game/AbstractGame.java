@@ -15,7 +15,7 @@ public abstract class AbstractGame {
 
     protected Status status;
     // can be multiple in case of a draw
-    protected final List<Integer> winnerId = new ArrayList<>();
+    protected List<Integer> winnerId;
 
     protected Board board;
 
@@ -27,50 +27,50 @@ public abstract class AbstractGame {
     public void makeMove(Move move, List<Tile> drawnTiles) {
         turn++;
 
-        if (move.getTileId() == null) {
-            return; // move: pass
-        }
+        if (move.getTileId().isEmpty()) {
+            scorelessTurns++; // move: pass
+        } else {
+            Player player = getCurrentPlayer();
 
-        Player player = getCurrentPlayer();
+            // move: draw or place tiles
+            for (int id : move.getTileId()) {
+                player.removeFromHand(id);
+            }
+            player.addAllToHand(drawnTiles);
 
-        // move: draw or place tiles
-        for (int id : move.getTileId()) {
-            player.removeFromHand(id);
-        }
-        player.addAllToHand(drawnTiles);
+            // move: place tiles
+            List<Integer> coordinates = move.getCoordinates();
 
-        // move: place tiles
-        List<Integer> coordinates = move.getCoordinates();
+            // calculating score
+            int score = 0;
+            List<Integer> coordinatesForWords = move.getCoordinatesForWords();
+            // TODO: calculate the score
 
-        // calculating score
-        int score = 0;
-        List<Integer> coordinatesForWords = move.getCoordinatesForWords();
-        // TODO: calculate the score
+            if (score == 0) {
+                scorelessTurns++;
+            }
+            player.addScore(score);
 
-        if (score == 0) {
-            scorelessTurns++;
-        }
-        player.addScore(score);
-
-        // placing tiles on the board
-        List<Character> blanks = move.getBlank();
-        Deque<Character> blanksQueue = new ArrayDeque<>();
-        if (blanks != null) {
-            blanksQueue.addAll(blanks);
-        }
-        if (coordinates != null) {
-            for (int i = 0; i < coordinates.size(); i += 2) {
-                int x = coordinates.get(i);
-                int y = coordinates.get(i + 1);
-                Tile tile = move.getTiles().get(i / 2);
-                if (tile.isBlank()) {
-                    tile.setCharacter(blanksQueue.removeFirst());
+            // placing tiles on the board
+            List<Character> blanks = move.getBlank();
+            Deque<Character> blanksQueue = new ArrayDeque<>();
+            if (!blanks.isEmpty()) {
+                blanksQueue.addAll(blanks);
+            }
+            if (!coordinates.isEmpty()) {
+                for (int i = 0; i < coordinates.size(); i += 2) {
+                    int x = coordinates.get(i);
+                    int y = coordinates.get(i + 1);
+                    Tile tile = move.getTiles().get(i / 2);
+                    if (tile.isBlank()) {
+                        tile.setCharacter(blanksQueue.removeFirst());
+                    }
+                    board.placeTile(x, y, tile);
                 }
-                board.placeTile(x, y, tile);
             }
         }
 
-//        checkForEnd();
+        checkForEnd();
         nextPlayer();
     }
 
@@ -118,5 +118,36 @@ public abstract class AbstractGame {
 
     protected abstract void nextPlayer();
 
-//    protected abstract void checkForEnd();
+    protected abstract void checkForEnd();
+
+    protected boolean checkForEnd(List<Player> players) {
+        if (status != Status.PLAYER_TURN && status != Status.OPPONENT_TURN) {
+            return false;
+        }
+
+        if (scorelessTurns >= 6 || getCurrentPlayer().getHandSize() == 0) {
+//            for (Player player : players) {
+//                player.addScore(-player.getHand().getSumScore());
+//            }
+
+            int bestScore = -1;
+            List<Integer> winnerId = new ArrayList<>();
+            for (Player player : players) {
+                if (player.getScore() > bestScore) {
+                    winnerId = new ArrayList<>();
+                    winnerId.add(player.getId());
+                    bestScore = player.getScore();
+                    status = Status.WON;
+                } else if (player.getScore() == bestScore) {
+                    winnerId.add(player.getId());
+                    status = Status.DRAW;
+                }
+            }
+
+            this.winnerId = winnerId;
+            return true;
+        }
+
+        return false;
+    }
 }
