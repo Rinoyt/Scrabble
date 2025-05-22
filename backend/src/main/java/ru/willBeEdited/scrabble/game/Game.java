@@ -136,7 +136,11 @@ public class Game extends AbstractGame{
     }
 
     public List<Tile> makeMove(Move move) {
-        List<Tile> drawnTiles = bag.draw(move.getTileId().length);
+        int drawSize = 0;
+        if (move.getTileId() != null) {
+            drawSize = move.getTileId().length;
+        }
+        List<Tile> drawnTiles = bag.draw(drawSize);
         super.makeMove(move, drawnTiles);
         return drawnTiles;
     }
