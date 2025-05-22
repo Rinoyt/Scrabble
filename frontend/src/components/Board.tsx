@@ -15,9 +15,27 @@ interface GameData {
     currentTurnPlayerId: number,
     id: number,
     opponents: object[],
-    player: object,
+    player: PlayerData,
     status: string,
     turn: number
+}
+
+interface PlayerData {
+    id: number,
+    name: string,
+    score: number,
+    hand: HandData
+}
+
+interface HandData {
+    tiles: TileData[]
+}
+
+interface TileData {
+    id: number,
+    character: string,
+    score: number,
+    blank: boolean
 }
 
 interface BoardData {
@@ -29,19 +47,6 @@ interface CellData {
     multiplier: number,
     tile: object | null
 }
-
-const letterPoints: Record<string, number> = {
-    A: 1, B: 3, C: 3, D: 2, E: 1, F: 4, G: 2,
-    H: 4, I: 1, J: 8, K: 5, L: 1, M: 3, N: 1,
-    O: 1, P: 3, Q: 10, R: 1, S: 1, T: 1, U: 1,
-    V: 4, W: 4, X: 8, Y: 4, Z: 10
-};
-
-
-const generateRack = (): string[] => {
-    const letters = Object.keys(letterPoints);
-    return Array.from({ length: 7 }, () => letters[Math.floor(Math.random() * letters.length)]);
-};
 
 const LETTER2_BG: string = "bg-blue-300";
 const LETTER3_BG: string = "bg-red-300";
@@ -72,19 +77,19 @@ const getCellColor = (multiplier: Multiplier | null): string => {
 }
 
 const Board: React.FC = () => {
-    const [board, setBoard] = useState<(string | null)[][]>(Array(15).fill(null).map(() => Array(15).fill(null)));
+    const [board, setBoard] = useState<(TileData | null)[][]>(Array(15).fill(null).map(() => Array(15).fill(null)));
     const [multipliers, setMultipliers] = useState<(Multiplier | null)[][]>(Array(15).fill(null).map(() => Array(15).fill(null)));
 
-    const [rack, setRack] = useState<string[]>(generateRack());
+    const [hand, setHand] = useState<(TileData | null)[]>([]);
     const [score, setScore] = useState<number>(0);
     const [gameStarted, setGameStarted] = useState<boolean>(false);
 
-    const [draggedLetter, setDraggedLetter] = useState<string | null>(null);
+    const [draggedLetter, setDraggedLetter] = useState<TileData | null>(null);
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
 
-    const onDragStart = (letter: string, index: number) => {
-        setDraggedLetter(letter);
+    const onDragStart = (tile: TileData | null, index: number) => {
+        setDraggedLetter(tile);
         setDraggedIndex(index);
     };
 
@@ -97,22 +102,22 @@ const Board: React.FC = () => {
         newBoard[row][col] = draggedLetter;
         setBoard(newBoard);
 
-        const newRack = [...rack];
-        newRack.splice(draggedIndex, 1);
+        const newHand = [...hand];
+        newHand.splice(draggedIndex, 1);
 
-        setRack(newRack);
+        setHand(newHand);
         setDraggedLetter(null);
         setDraggedIndex(null);
     };
 
     const onReturnToRack = (row: number, col: number) => {
         const newBoard = board.map((row) => [...row]);
-        const letter = newBoard[row][col];
-        if (!letter) return;
+        const tile = newBoard[row][col];
+        if (!tile) return;
 
         newBoard[row][col] = null;
         setBoard(newBoard);
-        setRack([...rack, letter]);
+        setHand([...hand, tile]);
     };
 
     const makeMove = () => { };
@@ -126,7 +131,6 @@ const Board: React.FC = () => {
 
         try {
             const response = await fetch("http://localhost:8090/api/1/game", { method: "GET" });
-
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
@@ -137,6 +141,10 @@ const Board: React.FC = () => {
             const ms: (Multiplier | null)[][] = data.board.board.map((row) => row.map((cell) => ({ type: cell.type, m: cell.multiplier })));
             setMultipliers(ms);
 
+            const hand: (TileData | null)[] = data.player.hand.tiles;
+            setHand(hand);
+
+            setScore(data.player.score);
             setGameStarted(true);
         } catch (error) {
             console.error("Error while starting a game:", error);
@@ -150,9 +158,7 @@ const Board: React.FC = () => {
     return (
         <div className="p-4 flex flex-col items-center">
             <h1 className="text-2xl font-bold mb-4">Scrabble Online</h1>
-            <div className="mb-4">Score: {score}</div>
-            {/* <button onClick={calculateScore} className="mb-4 px-4 py-2 bg-blue-500 text-white rounded">Подсчитать очки</button> */}
-
+            <div className="mb-2">Score: {score}</div>
             <div className="mb-3 flex flex-row gap-4">
                 <div className="flex flex-row items-center gap-1.5">
                     <div className={clsx("w-4 h-4 border border-gray-400", LETTER2_BG)} />
@@ -171,14 +177,14 @@ const Board: React.FC = () => {
 
                 <div className="flex flex-row items-center gap-2">
                     <div className={clsx("w-4 h-4 border border-gray-400", WORD3_BG)} />
-                    <span>Слово х2</span>
+                    <span>Слово х3</span>
                 </div>
             </div>
 
             <div className="grid grid-cols-1 mb-1">
                 {board.map((row, rowIndex) => (
                     <div key={uuidv4()} className="flex">
-                        {row.map((cell, colIndex) => (
+                        {row.map((tile, colIndex) => (
                             <div
                                 key={uuidv4()}
                                 onDragOver={(e) => e.preventDefault()}
@@ -189,7 +195,7 @@ const Board: React.FC = () => {
                                     getCellColor(multipliers[rowIndex][colIndex])
                                 )}
                             >
-                                {cell}
+                                {tile?.character}
                             </div>
                         ))}
                     </div>
@@ -198,14 +204,17 @@ const Board: React.FC = () => {
 
             <p className="mt-2 mb-4 text-xs text-gray-600">* Двойной клик по букве на поле — вернуть её обратно в руку</p>
             <div className="flex space-x-2 mb-4">
-                {rack.map((letter, idx) => (
+                {hand.map((tile, idx) => (
                     <div
                         key={idx}
                         draggable
-                        onDragStart={() => onDragStart(letter, idx)}
-                        className="w-10 h-10 bg-emerald-600 border rounded-xs flex items-center justify-center cursor-move shadow"
+                        onDragStart={() => onDragStart(tile, idx)}
+                        className="relative w-10 h-10 bg-emerald-600 border rounded-xs flex items-center justify-center cursor-move shadow"
                     >
-                        {letter}
+                        {tile?.character}
+                        <span className="absolute bottom-0.5 right-1 text-[10px] font-normal">
+                            {tile?.score}
+                        </span>
                     </div>
                 ))}
             </div>
