@@ -2,11 +2,18 @@ import React, { useState } from "react";
 import { v4 as uuidv4 } from "uuid";
 import StartScreen from "./StartScreen";
 
+import { Stomp } from "@stomp/stompjs";
 import clsx from "clsx";
+import SockJS from 'sockjs-client';
 
 interface Multiplier {
     type: "BLANK" | "WORD" | "LETTER",
     m: number,
+}
+
+interface Move {
+    playerId: number,
+    tileId: (number | undefined)[]
 }
 
 interface GameData {
@@ -80,8 +87,9 @@ const Board: React.FC = () => {
     const [board, setBoard] = useState<(TileData | null)[][]>(Array(15).fill(null).map(() => Array(15).fill(null)));
     const [multipliers, setMultipliers] = useState<(Multiplier | null)[][]>(Array(15).fill(null).map(() => Array(15).fill(null)));
 
-    const [hand, setHand] = useState<(TileData | null)[]>([]);
+    const [playerId, setPlayerId] = useState<number>(0);
     const [score, setScore] = useState<number>(0);
+    const [hand, setHand] = useState<(TileData | null)[]>([]);
     const [gameStarted, setGameStarted] = useState<boolean>(false);
 
     const [draggedLetter, setDraggedLetter] = useState<TileData | null>(null);
@@ -122,29 +130,92 @@ const Board: React.FC = () => {
 
     const makeMove = () => { };
 
-    const skipMove = () => { };
-
-    const retakeTiles = () => { };
-
-    const startGame = async () => {
-        setGameStarted(true);
+    const skipMove = async () => {
+        let move: Move = {
+            playerId: playerId, 
+            tileId: []
+        };
 
         try {
-            const response = await fetch("http://localhost:8090/api/1/game", { method: "GET" });
+            const response = await fetch("http://localhost:8090/api/1/game", {
+                method: "PUT",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(move),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Ошибка от сервера: ${errorText}`);
+            }
+        } catch (err) {
+            console.error("Ошибка при отправке хода:", err);
+        }
+    };
+
+    const retakeTiles = async () => {
+        const tilesToDrop = hand.filter((tile) => (tile && tile != undefined && tile !== null)).map((tile) => (tile?.id));
+        console.log("TILES TO DROP: ", tilesToDrop);
+        let move: Move = {
+            playerId: playerId,
+            tileId: tilesToDrop
+        };
+
+        try {
+            const response = await fetch("http://localhost:8090/api/1/game", {
+                method: "PUT",
+                credentials: "include",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify(move),
+            });
+
+            if (!response.ok) {
+                const errorText = await response.text();
+                throw new Error(`Ошибка от сервера: ${errorText}`);
+            }
+            const newTiles: (TileData | null)[] = await response.json();
+            console.log("NEW TILES: ", newTiles);
+            setHand(newTiles);
+
+        } catch (err) {
+            console.error("Ошибка при отправке хода:", err);
+        }
+    };
+
+    const startGame = async () => {
+        try {
+            const socket = new SockJS("http://localhost:8090/game");
+            const client = Stomp.over(socket);
+            await new Promise(resolve => client.connect({}, resolve));
+
+            client.subscribe("/game/move", (message) => {
+                const move = JSON.parse(message.body);
+                console.log("Move: ", move)
+            });
+
+            // Initial game fetch
+            const response = await fetch("http://localhost:8090/api/1/game", {
+                method: "GET",
+                credentials: "include"
+            });
             if (!response.ok) {
                 throw new Error(`HTTP error! status: ${response.status}`);
             }
-
             const data: GameData = await response.json();
             console.log("Server response:", data);
 
-            const ms: (Multiplier | null)[][] = data.board.board.map((row) => row.map((cell) => ({ type: cell.type, m: cell.multiplier })));
-            setMultipliers(ms);
-
+            const ms: (Multiplier | null)[][] = data.board.board.map((row) =>
+                row.map((cell) => ({ type: cell.type, m: cell.multiplier })));
             const hand: (TileData | null)[] = data.player.hand.tiles;
-            setHand(hand);
 
+            setPlayerId(data.player.id);
             setScore(data.player.score);
+            setMultipliers(ms);
+            setHand(hand);
             setGameStarted(true);
         } catch (error) {
             console.error("Error while starting a game:", error);
@@ -226,7 +297,7 @@ const Board: React.FC = () => {
                 <button onClick={skipMove} className="mb-4 px-4 py-2 bg-emerald-900 text-white rounded cursor-pointer disabled:bg-gray-500 disabled:cursor-auto">
                     Пропустить ход
                 </button>
-                <button disabled onClick={retakeTiles} className="mb-4 px-4 py-2 bg-emerald-900 text-white rounded cursor-pointer disabled:bg-gray-500 disabled:cursor-auto">
+                <button onClick={retakeTiles} className="mb-4 px-4 py-2 bg-emerald-900 text-white rounded cursor-pointer disabled:bg-gray-500 disabled:cursor-auto">
                     Сменить руку
                 </button>
             </div>
