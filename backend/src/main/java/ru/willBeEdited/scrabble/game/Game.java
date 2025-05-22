@@ -33,6 +33,7 @@ public class Game extends AbstractGame{
     }
 
     public void addPlayer(Player player) {
+        player.addAllToHand(bag.draw(7));
         players.add(player);
     }
 
