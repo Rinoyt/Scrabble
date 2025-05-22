@@ -34,6 +34,9 @@ public class Game extends AbstractGame{
 
     public void addPlayer(Player player) {
         player.addAllToHand(bag.draw(7));
+        if (players.isEmpty()) {
+            setCurrentTurnPlayerId(player.getId());
+        }
         players.add(player);
     }
 
