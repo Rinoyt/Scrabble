@@ -29,7 +29,9 @@ public class Hand {
     }
 
     public void addAll(Collection<Tile> tiles) {
-        this.tiles.addAll(tiles);
+        for (Tile tile : tiles) {
+            add(tile);
+        }
     }
 
     public boolean contains(int id) {
@@ -67,5 +69,17 @@ public class Hand {
         }
 
         throw new IllegalArgumentException("Hand doesn't contain tile with id " + id);
+    }
+
+    public int size() {
+        return tiles.size();
+    }
+
+    public int getSumScore() {
+        int score = 0;
+        for (Tile tile : tiles) {
+            score += tile.getScore();
+        }
+        return score;
     }
 }
