@@ -92,7 +92,7 @@ public class Bag {
     }
 
     public Tile draw() {
-        if (!isEmpty()) {
+        if (isEmpty()) {
             throw new IllegalStateException("Bag is empty");
         }
         return bag.removeFirst();
@@ -100,7 +100,7 @@ public class Bag {
 
     public List<Tile> draw(int amount) {
         List<Tile> drawnTiles = new ArrayList<>();
-        while (!bag.isEmpty()) {
+        while (!bag.isEmpty() && amount-- > 0) {
             drawnTiles.add(bag.removeFirst());
         }
         return drawnTiles;
