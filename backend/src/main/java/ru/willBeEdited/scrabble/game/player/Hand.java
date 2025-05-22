@@ -13,7 +13,7 @@ public class Hand {
     }
 
     public Hand(Hand hand) {
-        this.tiles = hand.getTiles();
+        tiles.addAll(hand.tiles);
     }
 
     public List<Tile> getTiles() {

@@ -43,7 +43,7 @@ public class GameView extends AbstractGame {
     }
 
     public List<Tile> makeMove(Move move) {
-        int drawnTilesSize = bag.draw(move.getTileId().length);
+        int drawnTilesSize = bag.draw(move.getTileId().size());
         List<Tile> drawnTiles = new ArrayList<>();
         for (int i = 0; i < drawnTilesSize; i++) {
             drawnTiles.add(new Tile());
@@ -114,4 +114,26 @@ public class GameView extends AbstractGame {
 
         throw new IllegalStateException("Current player not found with id " + currentTurnPlayerId);
     }
+
+//    @Override
+//    protected void checkForEnd() {
+//        if (status != Status.PLAYER_TURN && status != Status.OPPONENT_TURN) {
+//            return;
+//        }
+//
+//        if (scorelessTurns >= 6 || getCurrentPlayer().getHand().size() == 0) {
+//            int bestScore = player.getScore();
+//            int winnerId = player.getId();
+//            status = Status.WON;
+//            for (Opponent opponent : opponents) {
+//                if (opponent.getScore() > bestScore) {
+//                    winnerId = opponent.getId();
+//                    bestScore = opponent.getScore();
+//                    status = Status.WON;
+//                } else if (opponent.getScore() == bestScore) {
+//                    status = Status.DRAW;
+//                }
+//            }
+//        }
+//    }
 }

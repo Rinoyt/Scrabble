@@ -6,6 +6,7 @@ import ru.willBeEdited.scrabble.game.player.Player;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
 import java.util.ArrayDeque;
+import java.util.ArrayList;
 import java.util.Deque;
 import java.util.List;
 
@@ -13,11 +14,15 @@ public abstract class AbstractGame {
     protected int id;
 
     protected Status status;
+    // can be multiple in case of a draw
+    protected final List<Integer> winnerId = new ArrayList<>();
 
     protected Board board;
 
     protected int turn;
     protected int currentTurnPlayerId;
+
+    protected int scorelessTurns;
 
     public void makeMove(Move move, List<Tile> drawnTiles) {
         turn++;
@@ -35,13 +40,16 @@ public abstract class AbstractGame {
         player.addAllToHand(drawnTiles);
 
         // move: place tiles
-        int[] coordinates = move.getCoordinates();
+        List<Integer> coordinates = move.getCoordinates();
 
         // calculating score
         int score = 0;
-        int[] coordinatesForWords = move.getCoordinatesForWords();
+        List<Integer> coordinatesForWords = move.getCoordinatesForWords();
         // TODO: calculate the score
 
+        if (score == 0) {
+            scorelessTurns++;
+        }
         player.addScore(score);
 
         // placing tiles on the board
@@ -51,9 +59,9 @@ public abstract class AbstractGame {
             blanksQueue.addAll(blanks);
         }
         if (coordinates != null) {
-            for (int i = 0; i < coordinates.length; i += 2) {
-                int x = coordinates[i];
-                int y = coordinates[i + 1];
+            for (int i = 0; i < coordinates.size(); i += 2) {
+                int x = coordinates.get(i);
+                int y = coordinates.get(i + 1);
                 Tile tile = move.getTiles().get(i / 2);
                 if (tile.isBlank()) {
                     tile.setCharacter(blanksQueue.removeFirst());
@@ -62,6 +70,7 @@ public abstract class AbstractGame {
             }
         }
 
+//        checkForEnd();
         nextPlayer();
     }
 
@@ -108,4 +117,6 @@ public abstract class AbstractGame {
     public abstract Player getCurrentPlayer();
 
     protected abstract void nextPlayer();
+
+//    protected abstract void checkForEnd();
 }

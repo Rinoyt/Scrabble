@@ -5,6 +5,7 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import ru.willBeEdited.scrabble.game.bag.Bag;
+import ru.willBeEdited.scrabble.game.player.Opponent;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 import ru.willBeEdited.scrabble.game.board.Board;
 import ru.willBeEdited.scrabble.game.move.Move;
@@ -71,8 +72,8 @@ public class Game extends AbstractGame{
                 tiles.add(tile);
             }
 
-            int[] coordinates = move.getCoordinates();
-            if (coordinates.length != tiles.size()) {
+            List<Integer> coordinates = move.getCoordinates();
+            if (coordinates.size() != tiles.size()) {
                 return "tiles and their coordinates for placement do not match";
             }
 
@@ -81,9 +82,9 @@ public class Game extends AbstractGame{
             int blankNumber = move.getBlank().size();
             int boardSize = board.getBoard().length;
             boolean[][] placed = new boolean[boardSize][boardSize];
-            for (int i = 0; i < coordinates.length; i += 2) {
-                int x = coordinates[i];
-                int y = coordinates[i + 1];
+            for (int i = 0; i < coordinates.size(); i += 2) {
+                int x = coordinates.get(i);
+                int y = coordinates.get(i + 1);
                 if (x < 0 || boardSize <= x || y < 0 || boardSize <= y) {
                     return "incorrect coordinates";
                 }
@@ -118,10 +119,10 @@ public class Game extends AbstractGame{
                 }
             }
 
-            int[] coordinatesForWords = move.getCoordinatesForWords();
+            List<Integer> coordinatesForWords = move.getCoordinatesForWords();
             for (int i = 0; i < tiles.size(); i += 2) {
-                int x = coordinates[i];
-                int y = coordinates[i + 1];
+                int x = coordinates.get(i);
+                int y = coordinates.get(i + 1);
                 if (x < 0 || boardSize <= x || y < 0 || boardSize <= y) {
                     return "incorrect coordinates for formed words";
                 }
@@ -138,7 +139,7 @@ public class Game extends AbstractGame{
     public List<Tile> makeMove(Move move) {
         int drawSize = 0;
         if (move.getTileId() != null) {
-            drawSize = move.getTileId().length;
+            drawSize = move.getTileId().size();
         }
         List<Tile> drawnTiles = bag.draw(drawSize);
         super.makeMove(move, drawnTiles);
@@ -175,4 +176,29 @@ public class Game extends AbstractGame{
 
         throw new IllegalStateException("Current player not found with id " + currentTurnPlayerId);
     }
+
+//    @Override
+//    protected void checkForEnd() {
+//        if (status != Status.PLAYER_TURN && status != Status.OPPONENT_TURN) {
+//            return;
+//        }
+//
+//        if (scorelessTurns >= 6 || getCurrentPlayer().getHand().size() == 0) {
+//            for (Player player : players) {
+//                player.addScore(-player.getHand().getSumScore());
+//            }
+//
+//            int bestScore = -1;
+//            List<Integer> winnerId = 0;
+//            for (Player player : players) {
+//                if (player.getScore() > bestScore) {
+//                    winnerId = player.getId();
+//                    bestScore = player.getScore();
+//                    status = Status.WON;
+//                } else if (player.getScore() == bestScore) {
+//                    status = Status.DRAW;
+//                }
+//            }
+//        }
+//    }
 }

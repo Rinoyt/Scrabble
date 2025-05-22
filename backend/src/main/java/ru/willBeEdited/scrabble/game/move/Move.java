@@ -7,12 +7,12 @@ import java.util.List;
 public class Move {
     private int playerId;
 
-    private int[] tileId;
+    private List<Integer> tileId;
     private List<Tile> tiles;
-    private int[] coordinates;
+    private List<Integer> coordinates;
 
     // the player needs to pick which tiles form new words
-    private int[] coordinatesForWords;
+    private List<Integer> coordinatesForWords;
 
     private List<Character> blank;
 
@@ -31,11 +31,11 @@ public class Move {
         this.playerId = playerId;
     }
 
-    public int[] getTileId() {
+    public List<Integer> getTileId() {
         return tileId;
     }
 
-    public void setTileId(int[] tileId) {
+    public void setTileId(List<Integer> tileId) {
         this.tileId = tileId;
     }
 
@@ -47,19 +47,19 @@ public class Move {
         this.tiles = tiles;
     }
 
-    public int[] getCoordinates() {
+    public List<Integer> getCoordinates() {
         return coordinates;
     }
 
-    public void setCoordinates(int[] coordinates) {
+    public void setCoordinates(List<Integer> coordinates) {
         this.coordinates = coordinates;
     }
 
-    public int[] getCoordinatesForWords() {
+    public List<Integer> getCoordinatesForWords() {
         return coordinatesForWords;
     }
 
-    public void setCoordinatesForWords(int[] coordinatesForWords) {
+    public void setCoordinatesForWords(List<Integer> coordinatesForWords) {
         this.coordinatesForWords = coordinatesForWords;
     }
 
