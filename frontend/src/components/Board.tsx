@@ -13,7 +13,17 @@ interface Multiplier {
 
 interface Move {
     playerId: number,
-    tileId: (number | undefined)[]
+    tileId: number[],
+    tiles: TileData[],
+    coordinates: number[],
+    coordinatesForWords: number[],
+    blank: string[]
+}
+
+interface TilePosition {
+    i: number,
+    j: number,
+    tile: TileData
 }
 
 interface GameData {
@@ -92,6 +102,7 @@ const Board: React.FC = () => {
     const [hand, setHand] = useState<(TileData | null)[]>([]);
     const [gameStarted, setGameStarted] = useState<boolean>(false);
 
+    const [putLetters, setPutLetters] = useState<TilePosition[]>([]);
     const [draggedLetter, setDraggedLetter] = useState<TileData | null>(null);
     const [draggedIndex, setDraggedIndex] = useState<number | null>(null);
 
@@ -110,6 +121,9 @@ const Board: React.FC = () => {
         newBoard[row][col] = draggedLetter;
         setBoard(newBoard);
 
+        const newTilePosition: TilePosition = { i: row, j: col, tile: draggedLetter };
+        setPutLetters([...putLetters, newTilePosition]);
+
         const newHand = [...hand];
         newHand.splice(draggedIndex, 1);
 
@@ -124,6 +138,9 @@ const Board: React.FC = () => {
         if (!tile) return;
 
         newBoard[row][col] = null;
+        const newPutLetters: TilePosition[] = putLetters.filter((tpos) => tpos.i != row || tpos.j != col)
+
+        setPutLetters(newPutLetters);
         setBoard(newBoard);
         setHand([...hand, tile]);
     };
@@ -132,8 +149,12 @@ const Board: React.FC = () => {
 
     const skipMove = async () => {
         let move: Move = {
-            playerId: playerId, 
-            tileId: []
+            playerId: playerId,
+            tileId: [],
+            tiles: [],
+            coordinates: [],
+            coordinatesForWords: [],
+            blank: []
         };
 
         try {
@@ -156,12 +177,19 @@ const Board: React.FC = () => {
     };
 
     const retakeTiles = async () => {
-        const tilesToDrop = hand.filter((tile) => (tile && tile != undefined && tile !== null)).map((tile) => (tile?.id));
+        const tilesToDrop = hand.map((tile) => (tile?.id)).filter((n): n is number => n !== undefined);
         console.log("TILES TO DROP: ", tilesToDrop);
+        console.log("PLID: ", playerId);
         let move: Move = {
             playerId: playerId,
-            tileId: tilesToDrop
+            tileId: tilesToDrop,
+            tiles: [],
+            coordinates: [],
+            coordinatesForWords: [],
+            blank: []
         };
+
+        console.log(JSON.stringify(move));
 
         try {
             const response = await fetch("http://localhost:8090/api/1/game", {
@@ -291,7 +319,7 @@ const Board: React.FC = () => {
             </div>
 
             <div className="flex flex-row gap-2">
-                <button disabled onClick={makeMove} className="mb-4 px-4 py-2 bg-emerald-900 text-white rounded cursor-pointer disabled:bg-gray-500 disabled:cursor-auto">
+                <button onClick={makeMove} className="mb-4 px-4 py-2 bg-emerald-900 text-white rounded cursor-pointer disabled:bg-gray-500 disabled:cursor-auto">
                     Сделать ход
                 </button>
                 <button onClick={skipMove} className="mb-4 px-4 py-2 bg-emerald-900 text-white rounded cursor-pointer disabled:bg-gray-500 disabled:cursor-auto">
@@ -301,7 +329,6 @@ const Board: React.FC = () => {
                     Сменить руку
                 </button>
             </div>
-
         </div>
     );
 };

@@ -16,8 +16,8 @@ public class WebSocketConfig implements WebSocketMessageBrokerConfigurer {
 
     @Override
     public void registerStompEndpoints(StompEndpointRegistry registry) {
-        registry.addEndpoint("/game");
-        // fallback if websocket is not available
-        registry.addEndpoint("/game").withSockJS();
+        registry.addEndpoint("/game")
+                .setAllowedOrigins("http://localhost:5173")
+                .withSockJS();
     }
 }

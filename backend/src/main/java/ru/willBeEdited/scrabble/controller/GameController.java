@@ -59,6 +59,8 @@ public class GameController {
 
     @PutMapping("game")
     public List<Tile> makeMove(@RequestBody Move move, @SessionAttribute("gameView") GameView gameView) {
+        System.out.println(move.getPlayerId());
+
         Game game = games.get(gameView.getId());
         if (gameView.getPlayer().getId() != game.getCurrentTurnPlayerId()) {
             throw new IllegalMoveException("Out of turn move");
@@ -67,8 +69,10 @@ public class GameController {
         if (error != null) {
             throw new IllegalMoveException(error);
         }
-
+        
         List<Tile> drawnTiles = game.makeMove(move);
+        System.out.println("LOL: " + drawnTiles.toString());
+
         for (GameView view : gameViews.get(game.getId())) {
             view.makeMove(move, drawnTiles);
         }
