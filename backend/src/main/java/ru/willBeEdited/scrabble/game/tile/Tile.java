@@ -1,6 +1,6 @@
 package ru.willBeEdited.scrabble.game.tile;
 
-import static ru.willBeEdited.scrabble.game.RandomInt.getNewId;
+import static ru.willBeEdited.scrabble.game.util.RandomInt.getNewId;
 
 public class Tile {
     private int id;

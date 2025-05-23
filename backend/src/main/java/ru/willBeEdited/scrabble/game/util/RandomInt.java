@@ -1,4 +1,4 @@
-package ru.willBeEdited.scrabble.game;
+package ru.willBeEdited.scrabble.game.util;
 
 public final class RandomInt {
     static int id = 0;

@@ -5,7 +5,6 @@ import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Controller;
 import org.springframework.web.bind.annotation.SessionAttributes;
 import ru.willBeEdited.scrabble.game.bag.Bag;
-import ru.willBeEdited.scrabble.game.player.Opponent;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 import ru.willBeEdited.scrabble.game.board.Board;
 import ru.willBeEdited.scrabble.game.move.Move;
@@ -14,7 +13,7 @@ import ru.willBeEdited.scrabble.game.player.Player;
 
 import java.util.*;
 
-import static ru.willBeEdited.scrabble.game.RandomInt.getNewId;
+import static ru.willBeEdited.scrabble.game.util.RandomInt.getNewId;
 
 @Primary
 @Controller
