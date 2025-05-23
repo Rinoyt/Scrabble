@@ -7,6 +7,10 @@ public final class GameUtil {
     public static List<Word> getWords(int boardSize, List<Integer> coordinates) {
         List<Word> words = new ArrayList<>();
 
+        if (coordinates.isEmpty()) {
+            return words;
+        }
+
         boolean[][] board = new boolean[boardSize][boardSize];
         for (int x = 0; x < coordinates.size(); x += 2) {
             board[coordinates.get(x)][coordinates.get(x+1)] = true;
