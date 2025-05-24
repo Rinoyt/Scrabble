@@ -1,4 +1,4 @@
-package ru.willBeEdited.scrabble.webSocket;
+package ru.willBeEdited.scrabble.config;
 
 import org.springframework.context.annotation.Configuration;
 import org.springframework.messaging.simp.config.MessageBrokerRegistry;
