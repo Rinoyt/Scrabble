@@ -3,7 +3,6 @@ package ru.willBeEdited.scrabble.controller;
 import org.springframework.messaging.core.AbstractMessageSendingTemplate;
 import org.springframework.web.bind.annotation.*;
 import ru.willBeEdited.scrabble.game.GameView;
-import ru.willBeEdited.scrabble.game.move.Move;
 
 @RestController
 @RequestMapping("/api/1/game")
@@ -15,8 +14,8 @@ public class MoveController {
     }
 
     @PutMapping("move/pass")
-    public void pass(@RequestBody Move move, @SessionAttribute("gameView") GameView gameView) {
-        System.out.println("pass!");
+    public void pass(@SessionAttribute("gameView") GameView gameView) {
+        messageSendingTemplate.convertAndSend("/game/move/pass", gameView.getPlayer().getId());
     }
 
 //    @PutMapping("game/move/exchange")
