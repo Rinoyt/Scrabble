@@ -1,8 +1,6 @@
 package ru.willBeEdited.scrabble.controller;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
-import io.swagger.v3.oas.annotations.parameters.RequestBody;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.context.ApplicationContext;
@@ -21,6 +19,8 @@ import java.io.IOException;
 import java.nio.charset.StandardCharsets;
 import java.util.*;
 
+import static ru.willBeEdited.scrabble.domain.Games.*;
+
 @RestController
 @RequestMapping("/api/1")
 public class GameController {
@@ -30,7 +30,6 @@ public class GameController {
 
     private final Bot bot;
 
-    private final Map<Integer, Game> games = new HashMap<>();
     private final Map<Integer, List<GameView>> gameViews = new HashMap<>();
 
     public GameController(ApplicationContext context, AbstractMessageSendingTemplate<String> messageSendingTemplate, ObjectMapper objectMapper, Bot bot) {
@@ -41,7 +40,7 @@ public class GameController {
     }
 
     @GetMapping("game")
-    public GameView getGame(HttpSession session) {
+    public GameView getGameView(HttpSession session) {
         if (session.getAttribute("gameView") != null) {
             return (GameView) session.getAttribute("gameView");
         }
@@ -52,8 +51,8 @@ public class GameController {
         game.addPlayer(player);
         game.addPlayer(context.getBean(Bot.class));
 
-        games.put(game.getId(), game);
-        
+        addGame(game);
+
         GameView gameView = context.getBean(GameView.class, game, player.getId());
         gameViews.put(game.getId(), new ArrayList<>());
         gameViews.get(game.getId()).add(gameView);
@@ -73,7 +72,7 @@ public class GameController {
             throw new RuntimeException(e);
         }
 
-        Game game = games.get(gameView.getId());
+        Game game = getGame(gameView.getId());
         if (gameView.getPlayer().getId() != game.getCurrentTurnPlayerId()) {
             throw new IllegalMoveException("Out of turn move");
         }
@@ -105,7 +104,7 @@ public class GameController {
 
     @GetMapping("game/reset")
     public RedirectView resetGame(@SessionAttribute("gameView") GameView gameView, HttpSession session) {
-        games.remove(gameView.getId());
+        removeGame(gameView.getId());
         session.removeAttribute("gameView");
         return new RedirectView("/api/1/game");
     }
