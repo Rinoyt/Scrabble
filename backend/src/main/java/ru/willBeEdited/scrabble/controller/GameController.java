@@ -1,7 +1,5 @@
 package ru.willBeEdited.scrabble.controller;
 
-import com.fasterxml.jackson.databind.ObjectMapper;
-import jakarta.servlet.http.HttpServletRequest;
 import jakarta.servlet.http.HttpSession;
 import org.springframework.context.ApplicationContext;
 import org.springframework.messaging.core.AbstractMessageSendingTemplate;
@@ -15,8 +13,6 @@ import ru.willBeEdited.scrabble.game.player.Bot;
 import ru.willBeEdited.scrabble.game.player.Player;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
-import java.io.IOException;
-import java.nio.charset.StandardCharsets;
 import java.util.*;
 
 import static ru.willBeEdited.scrabble.domain.Games.*;
@@ -26,16 +22,14 @@ import static ru.willBeEdited.scrabble.domain.Games.*;
 public class GameController {
     private final ApplicationContext context;
     private final AbstractMessageSendingTemplate<String> messageSendingTemplate;
-    private final ObjectMapper objectMapper;
 
     private final Bot bot;
 
     private final Map<Integer, List<GameView>> gameViews = new HashMap<>();
 
-    public GameController(ApplicationContext context, AbstractMessageSendingTemplate<String> messageSendingTemplate, ObjectMapper objectMapper, Bot bot) {
+    public GameController(ApplicationContext context, AbstractMessageSendingTemplate<String> messageSendingTemplate, Bot bot) {
         this.context = context;
         this.messageSendingTemplate = messageSendingTemplate;
-        this.objectMapper = objectMapper;
         this.bot = bot;
     }
 
@@ -60,18 +54,8 @@ public class GameController {
         return gameView;
     }
 
-    // For some fk reason "@RequestBody Move move" doesn't work
     @PutMapping("game")
-    public List<Tile> makeMove(HttpServletRequest request, @SessionAttribute("gameView") GameView gameView) {
-        Scanner s;
-        Move move;
-        try {
-            s = new Scanner(request.getInputStream(), StandardCharsets.UTF_8).useDelimiter("\\A");
-            move = objectMapper.readValue(s.nextLine(), Move.class);
-        } catch (IOException e) {
-            throw new RuntimeException(e);
-        }
-
+    public List<Tile> makeMove(@RequestBody Move move, @SessionAttribute("gameView") GameView gameView) {
         Game game = getGame(gameView.getId());
         if (gameView.getPlayer().getId() != game.getCurrentTurnPlayerId()) {
             throw new IllegalMoveException("Out of turn move");
