@@ -6,6 +6,7 @@ import org.springframework.stereotype.Component;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
 import java.util.Collection;
+import java.util.List;
 
 import static ru.willBeEdited.scrabble.game.player.PlayerUtil.getRandomInt;
 
@@ -76,8 +77,18 @@ public class StandardPlayer implements Player {
     }
 
     @Override
-    public void addAllToHand(Collection<Tile> tiles) {
+    public void addAllToHand(List<Tile> tiles) {
         hand.addAll(tiles);
+    }
+
+    @Override
+    public List<Tile> getAllFromHand(List<Integer> tileId) {
+        return hand.getAll(tileId);
+    }
+
+    @Override
+    public void removeAllFromHand(List<Integer> tiles) {
+        hand.removeAll(tiles);
     }
 
     @Override

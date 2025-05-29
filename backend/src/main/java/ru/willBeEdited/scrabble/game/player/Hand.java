@@ -34,6 +34,21 @@ public class Hand {
         }
     }
 
+    public List<Tile> getAll(List<Integer> tileId) {
+        List<Tile> tiles = new ArrayList<>();
+        for (int id : tileId) {
+            tiles.add(get(id));
+        }
+
+        return tiles;
+    }
+
+    public void removeAll(List<Integer> tileId) {
+        for (int id : tileId) {
+            remove(id);
+        }
+    }
+
     public boolean contains(int id) {
         for (Tile tile : tiles) {
             if (tile.getId() == id) {

@@ -3,12 +3,8 @@ package ru.willBeEdited.scrabble.game;
 import org.springframework.context.annotation.Scope;
 import org.springframework.stereotype.Component;
 import ru.willBeEdited.scrabble.game.bag.BagView;
-import ru.willBeEdited.scrabble.game.board.StandardBoard;
-import ru.willBeEdited.scrabble.game.move.Move;
 import ru.willBeEdited.scrabble.game.player.Opponent;
 import ru.willBeEdited.scrabble.game.player.Player;
-import ru.willBeEdited.scrabble.game.player.StandardPlayer;
-import ru.willBeEdited.scrabble.game.tile.Tile;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,37 +21,46 @@ public class GameView extends AbstractGame {
     }
 
     public GameView(Game game, int playerId) {
-        id = game.getId();
-        status = game.getStatus();
-        board = new StandardBoard(game.getBoard());
-        turn = game.getTurn();
-        currentTurnPlayerId = game.getCurrentTurnPlayerId();
+        super(game.getId(), game.getStatus(), game.getWinnerId(), game.getBoard(),
+                game.getTurn(), game.getScorelessTurns(), game.getCurrentTurnPlayerId());
 
         bag = new BagView(game.getBag());
+
         opponents = new ArrayList<>();
-        for (Player play : game.getPlayers()) {
-            if (play.getId() == playerId) {
-                player = new StandardPlayer(play);
+        for (Player player : game.getPlayers()) {
+            if (player.getId() == playerId) {
+                this.player = player;
+                addPlayer(player);
             } else {
-                opponents.add(new Opponent(play));
+                Opponent opponent = new Opponent(player);
+                opponents.add(opponent);
+                addPlayer(opponent);
             }
         }
     }
 
-    public List<Tile> makeMove(Move move) {
-        int drawnTilesSize = bag.draw(move.getTileId().size());
-        List<Tile> drawnTiles = new ArrayList<>();
-        for (int i = 0; i < drawnTilesSize; i++) {
-            drawnTiles.add(new Tile());
+    @Override
+    protected void nextPlayer() {
+        super.nextPlayer();
+
+        if (player.getId() == getCurrentTurnPlayerId()) {
+            setStatus(Status.PLAYER_TURN);
+        } else {
+            setStatus(Status.OPPONENT_TURN);
         }
-        super.makeMove(move, drawnTiles);
-        return drawnTiles;
     }
 
-    public void makeMove(Move move, List<Tile> drawnTiles) {
-        bag.draw(drawnTiles.size());
-        super.makeMove(move, drawnTiles);
+    @Override
+    protected boolean checkForEnd() {
+        boolean ended = super.checkForEnd();
+        if (ended && !getWinnerId().contains(player.getId())) {
+            setStatus(Status.LOST);
+        }
+
+        return ended;
     }
+
+    // getters and setters for json
 
     public Player getPlayer() {
         return player;
@@ -73,56 +78,12 @@ public class GameView extends AbstractGame {
         this.opponents = opponents;
     }
 
+    @Override
     public BagView getBag() {
         return bag;
     }
 
     public void setBag(BagView bag) {
         this.bag = bag;
-    }
-
-    @Override
-    public Player getCurrentPlayer() {
-        if (player.getId() == currentTurnPlayerId) {
-            return player;
-        }
-
-        for (Opponent opponent : opponents) {
-            if (opponent.getId() == currentTurnPlayerId) {
-                return opponent;
-            }
-        }
-
-        throw new IllegalStateException("Current player not found with id " + currentTurnPlayerId);
-    }
-
-    @Override
-    protected void nextPlayer() {
-        if (player.getId() == currentTurnPlayerId) {
-            currentTurnPlayerId = opponents.getFirst().getId();
-            status = Status.PLAYER_TURN;
-            return;
-        }
-
-        for (int i = 0; i < opponents.size(); i++) {
-            if (opponents.get(i).getId() == currentTurnPlayerId) {
-                currentTurnPlayerId = opponents.get((i + 1) % opponents.size()).getId();
-                status = Status.OPPONENT_TURN;
-                return;
-            }
-        }
-
-        throw new IllegalStateException("Current player not found with id " + currentTurnPlayerId);
-    }
-
-    @Override
-    protected void checkForEnd() {
-        List<Player> players = new ArrayList<>();
-        players.add(player);
-        players.addAll(opponents);
-
-        if (checkForEnd(players) && !winnerId.contains(player.getId())) {
-            status = Status.LOST;
-        }
     }
 }

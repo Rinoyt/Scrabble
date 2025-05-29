@@ -11,13 +11,21 @@ interface Multiplier {
     m: number,
 }
 
-interface Move {
+interface Pass {
+    playerId: number
+}
+
+interface Exchange {
     playerId: number,
     tileId: number[],
-    tiles: TileData[],
+}
+
+interface Play {
+    playerId: number,
+    tileId: number[],
     coordinates: number[],
     coordinatesForWords: number[],
-    blank: string[]
+    blank: Map<number, string>
 }
 
 interface TilePosition {
@@ -148,23 +156,18 @@ const Board: React.FC = () => {
     const makeMove = () => { };
 
     const skipMove = async () => {
-        let move: Move = {
-            playerId: playerId,
-            tileId: [],
-            tiles: [],
-            coordinates: [],
-            coordinatesForWords: [],
-            blank: []
+        let pass: Pass = {
+            playerId: playerId
         };
 
         try {
-            const response = await fetch("http://localhost:8090/api/1/game", {
+            const response = await fetch("http://localhost:8090/api/1/game/move/pass", {
                 method: "PUT",
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(move),
+                body: JSON.stringify(pass),
             });
 
             if (!response.ok) {
@@ -180,25 +183,21 @@ const Board: React.FC = () => {
         const tilesToDrop = hand.map((tile) => (tile?.id)).filter((n): n is number => n !== undefined);
         console.log("TILES TO DROP: ", tilesToDrop);
         console.log("PLID: ", playerId);
-        let move: Move = {
+        let exchange: Exchange = {
             playerId: playerId,
-            tileId: tilesToDrop,
-            tiles: [],
-            coordinates: [],
-            coordinatesForWords: [],
-            blank: []
+            tileId: tilesToDrop
         };
 
-        console.log(JSON.stringify(move));
+        console.log(JSON.stringify(exchange));
 
         try {
-            const response = await fetch("http://localhost:8090/api/1/game", {
+            const response = await fetch("http://localhost:8090/api/1/game/move/exchange", {
                 method: "PUT",
                 credentials: "include",
                 headers: {
                     "Content-Type": "application/json",
                 },
-                body: JSON.stringify(move),
+                body: JSON.stringify(exchange),
             });
 
             if (!response.ok) {
@@ -220,9 +219,19 @@ const Board: React.FC = () => {
             const client = Stomp.over(socket);
             await new Promise(resolve => client.connect({}, resolve));
 
-            client.subscribe("/game/move", (message) => {
-                const move = JSON.parse(message.body);
-                console.log("Move: ", move)
+            client.subscribe("/game/move/pass", (message) => {
+                const pass = JSON.parse(message.body);
+                console.log("(Move) Pass: ", pass)
+            });
+
+            client.subscribe("/game/move/exchange", (message) => {
+                const exchange = JSON.parse(message.body);
+                console.log("(Move) Exchange: ", exchange)
+            });
+
+            client.subscribe("/game/move/play", (message) => {
+                const play = JSON.parse(message.body);
+                console.log("(Move) Play: ", play)
             });
 
             // Initial game fetch

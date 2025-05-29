@@ -3,6 +3,7 @@ package ru.willBeEdited.scrabble.game.player;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
 import java.util.Collection;
+import java.util.List;
 
 public interface Player {
     int getId();
@@ -25,7 +26,11 @@ public interface Player {
 
     void addToHand(Tile tile);
 
-    void addAllToHand(Collection<Tile> tiles);
+    void addAllToHand(List<Tile> tiles);
+
+    List<Tile> getAllFromHand(List<Integer> tileId);
+
+    void removeAllFromHand(List<Integer> tileId);
 
     int getHandSize();
 

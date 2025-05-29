@@ -3,6 +3,7 @@ package ru.willBeEdited.scrabble.game.player;
 import ru.willBeEdited.scrabble.game.tile.Tile;
 
 import java.util.Collection;
+import java.util.List;
 
 public class Opponent extends StandardPlayer {
     private int handSize;
@@ -39,7 +40,7 @@ public class Opponent extends StandardPlayer {
     }
 
     @Override
-    public void addAllToHand(Collection<Tile> tiles) {
+    public void addAllToHand(List<Tile> tiles) {
         handSize += tiles.size();
     }
 

@@ -1,6 +1,11 @@
 package ru.willBeEdited.scrabble.game.bag;
 
-public class BagView {
+import ru.willBeEdited.scrabble.game.tile.Tile;
+
+import java.util.ArrayList;
+import java.util.List;
+
+public class BagView extends Bag {
     private int bagSize;
 
     public BagView() {
@@ -10,35 +15,29 @@ public class BagView {
         this.bagSize = bag.size();
     }
 
+    @Override
+    public int size() {
+        return bagSize;
+    }
+
+    @Override
+    public boolean isEmpty() {
+        return bagSize == 0;
+    }
+
+    @Override
+    public List<Tile> draw(int amount) {
+        bagSize -= Math.min(amount, bagSize);
+        return new ArrayList<>();
+    }
+
+    // getters and setters for json
+
     public int getBagSize() {
         return bagSize;
     }
 
     public void setBagSize(int bagSize) {
         this.bagSize = bagSize;
-    }
-
-    public boolean isEmpty() {
-        return bagSize == 0;
-    }
-
-    public boolean draw() {
-        if (isEmpty()) {
-            return false;
-        }
-
-        bagSize--;
-        return true;
-    }
-
-    public int draw(int amount) {
-        if (bagSize < amount) {
-            int tmp = bagSize;
-            bagSize = 0;
-            return tmp;
-        }
-
-        bagSize -= amount;
-        return amount;
     }
 }
